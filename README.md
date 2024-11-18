@@ -1,3 +1,3 @@
 # clone-tabnews
 Estudos para o curso.dev
-teste novo
+teste novo novo
