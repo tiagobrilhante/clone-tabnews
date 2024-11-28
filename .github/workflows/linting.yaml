@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Clona todo o histórico necessário
 
       - uses: actions/setup-node@v4
         with:
@@ -47,10 +47,18 @@ jobs:
       - run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Running commitlint for pull_request"
-            npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
+            if [ "${{ github.event.pull_request.base.sha }}" != "0000000000000000000000000000000000000000" ]; then
+              npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
+            else
+              echo "Base SHA is invalid, skipping commitlint for pull_request"
+            fi
           elif [ "${{ github.event_name }}" = "push" ]; then
             echo "Running commitlint for push"
-            npx commitlint --from "${{ github.event.before }}" --to "${{ github.sha }}" --verbose
+            if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+              npx commitlint --from "${{ github.event.before }}" --to "${{ github.sha }}" --verbose
+            else
+              echo "Before SHA is invalid, skipping commitlint for push"
+            fi
           else
             echo "Unknown event: ${{ github.event_name }}"
             exit 1
