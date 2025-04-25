@@ -71,6 +71,8 @@ async function update(username, userInputValues) {
   if ("email" in userInputValues) {
     await validateUniqueEmail(userInputValues.email);
   }
+
+  console.log(currentUser);
 }
 
 async function validateUniqueUsername(username) {
