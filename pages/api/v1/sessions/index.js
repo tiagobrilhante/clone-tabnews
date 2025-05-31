@@ -16,5 +16,6 @@ async function postHandler(request, response) {
     userInputValues.password,
   );
 
+  console.log(authenticatedUser);
   return response.status(201).json({});
 }
