@@ -20,6 +20,7 @@ async function postHandler(request, response) {
 
   const newSession = await session.create(authenticatedUser.id);
 
+  // only maxAGe
   const setCookie = cookie.serialize("session_id", newSession.token, {
     path: "/",
     maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
