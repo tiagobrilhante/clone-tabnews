@@ -1,5 +1,5 @@
 import { version as uuidVersion } from "uuid";
-import activation from "models/activation";
+import activation from "models/activation.js";
 import user from "models/user.js";
 import orchestrator from "tests/orchestrator.js";
 
@@ -13,7 +13,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
   describe("Anonymous user", () => {
     test("With nonexistent token", async () => {
       const response = await fetch(
-        "http://localhost:3000/api/v1/activations/1681a704-1aac-489e-80e1-0721c35c1ec4",
+        "http://localhost:3000/api/v1/activations/dc7bf1c1-ba4d-4428-9de9-b5290d86b98e",
         {
           method: "PATCH",
         },
@@ -64,10 +64,10 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
 
     test("With already used token", async () => {
       const createdUser = await orchestrator.createUser();
-      const expiredActivationToken = await activation.create(createdUser.id);
+      const activationToken = await activation.create(createdUser.id);
 
       const response1 = await fetch(
-        `http://localhost:3000/api/v1/activations/${expiredActivationToken.id}`,
+        `http://localhost:3000/api/v1/activations/${activationToken.id}`,
         {
           method: "PATCH",
         },
@@ -76,7 +76,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       expect(response1.status).toBe(200);
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/activations/${expiredActivationToken.id}`,
+        `http://localhost:3000/api/v1/activations/${activationToken.id}`,
         {
           method: "PATCH",
         },
@@ -142,7 +142,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       ]);
     });
 
-    test("With valid token but already activated user", async () => {
+    test("With valid token, but already activated user", async () => {
       const createdUser = await orchestrator.createUser();
       await orchestrator.activateUser(createdUser);
       const activationToken = await activation.create(createdUser.id);
@@ -193,8 +193,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       expect(responseBody).toEqual({
         name: "ForbiddenError",
         message: "Você não possui permissão para executar esta ação.",
-        action:
-          'Verifique se o seu usuário possui a feature "read:activation_token"',
+        action: `Verifique se o seu usuário possui a feature "read:activation_token"`,
         status_code: 403,
       });
     });
