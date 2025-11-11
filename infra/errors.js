@@ -4,7 +4,7 @@ export class InternalServerError extends Error {
       cause,
     });
     this.name = "InternalServerError";
-    this.action = "Entre em contato com o suporte";
+    this.action = "Entre em contato com o suporte.";
     this.statusCode = statusCode || 500;
   }
 
@@ -23,7 +23,7 @@ export class MethodNotAllowedError extends Error {
     super("Método não permitido para esse endpoint.");
     this.name = "MethodNotAllowedError";
     this.action =
-      "Verifique se o método HTTP enviado é válido para este endpoint";
+      "Verifique se o método HTTP enviado é válido para este endpoint.";
     this.statusCode = 405;
   }
 
@@ -104,8 +104,29 @@ export class UnauthorizedError extends Error {
       cause,
     });
     this.name = "UnauthorizedError";
-    this.action = action || "Faça novamente o login para continuar..";
+    this.action = action || "Faça novamente o login para continuar.";
     this.statusCode = 401;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
+export class ForbiddenError extends Error {
+  constructor({ cause, message, action }) {
+    super(message || "Acesso negado.", {
+      cause,
+    });
+    this.name = "ForbiddenError";
+    this.action =
+      action || "Verifique as features necessárias antes de continuar.";
+    this.statusCode = 403;
   }
 
   toJSON() {
