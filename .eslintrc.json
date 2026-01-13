@@ -4,5 +4,8 @@
     "next/core-web-vitals",
     "plugin:jest/recommended",
     "prettier"
-  ]
+  ],
+  "env": {
+    "jest/globals": true
+  }
 }
