@@ -111,6 +111,11 @@ async function activateUser(inactiveUser) {
   return await activation.activateUserByUserId(inactiveUser.id);
 }
 
+async function addFeaturesToUser(userObject, features) {
+  const updatedUser = await user.addFeatures(userObject.id, features);
+  return updatedUser;
+}
+
 function extractUUID(text) {
   const match = text.match(/[0-9a-fA-F-]{36}/);
   return match ? match[0] : null;
@@ -126,5 +131,6 @@ const orchestrator = {
   runPendingMigrations,
   deleteAllEmails,
   getLastEmail,
+  addFeaturesToUser,
 };
 export default orchestrator;
