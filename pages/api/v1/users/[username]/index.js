@@ -29,10 +29,8 @@ async function getHandler(request, response) {
 
 async function patchHandler(request, response) {
   const username = request.query.username;
-
   const userInputValues = request.body;
 
-  // user, feature, resource
   const userTryingToPatch = request.context.user;
   const targetUser = await user.findOneByUsername(username);
 
@@ -46,5 +44,11 @@ async function patchHandler(request, response) {
 
   const updatedUser = await user.update(username, userInputValues);
 
-  return response.status(200).json(updatedUser);
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToPatch,
+    "read:user",
+    updatedUser,
+  );
+
+  return response.status(200).json(secureOutputValues);
 }
