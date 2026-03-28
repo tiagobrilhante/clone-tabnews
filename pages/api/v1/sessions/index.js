@@ -6,18 +6,16 @@ import session from "models/session.js";
 
 import { ForbiddenError } from "infra/errors";
 
-const router = createRouter();
-
-router.use(controller.injectAnonymousOrUser);
-router.post(controller.canRequest("create:session"), postHandler);
-router.delete(deleteHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter()
+  .use(controller.injectAnonymousOrUser)
+  .post(controller.canRequest("create:session"), postHandler)
+  .delete(deleteHandler)
+  .handler(controller.errorHandlers);
 
 async function postHandler(request, response) {
   const userInputValues = request.body;
 
-  const authenticatedUser = await authentication.getAuthenticatedUser(
+  const authenticatedUser = await authentication.getUser(
     userInputValues.email,
     userInputValues.password,
   );
@@ -31,8 +29,7 @@ async function postHandler(request, response) {
 
   const newSession = await session.create(authenticatedUser.id);
 
-  //todo async sem await
-  await controller.setSessionCookie(newSession.token, response);
+  controller.setSessionCookie(newSession.token, response);
 
   const secureOutputValues = authorization.filterOutput(
     authenticatedUser,
@@ -50,8 +47,7 @@ async function deleteHandler(request, response) {
   const sessionObject = await session.findOneValidByToken(sessionToken);
   const expiredSession = await session.expireById(sessionObject.id);
 
-  //todo async sem await
-  await controller.clearSessionCookie(response);
+  controller.clearSessionCookie(response);
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToDelete,
